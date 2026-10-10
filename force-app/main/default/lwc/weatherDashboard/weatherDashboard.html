@@ -1,0 +1,152 @@
+
+<template>
+    <lightning-card title="Weather Dashboard" icon-name="utility:world">
+        <div class="slds-p-around_medium">
+
+
+            <template lwc:if={isAccountPage}>
+                <p class="slds-text-color_weak">
+                    Météo associée à ce compte Salesforce
+                </p>
+            </template>
+
+            <template lwc:else>
+                <lightning-input
+                    label="Rechercher une ville"
+                    placeholder="Ex : Paris, London, New York"
+                    value={city}
+                    onchange={handleCityChange}>
+                </lightning-input>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button
+                        label="Rechercher"
+                        variant="brand"
+                        onclick={handleSearch}>
+                    </lightning-button>
+
+                    <lightning-button
+                        label="Ma position"
+                        icon-name="utility:checkin"
+                        class="slds-m-left_small"
+                        onclick={handleGeolocation}>
+                    </lightning-button>
+                </div>
+                
+                <div class="slds-m-top_medium">
+                    <p class="slds-text-title_bold slds-m-bottom_small">
+                        Recherche par coordonnées GPS
+                    </p>
+
+                    <div class="slds-grid slds-gutters">
+                        <div class="slds-col">
+                            <lightning-input
+                                type="number"
+                                label="Latitude"
+                                step="any"
+                                min="-90"
+                                max="90"
+                                value={latitudeInput}
+                                onchange={handleLatitudeChange}>
+                            </lightning-input>
+                        </div>
+
+                        <div class="slds-col">
+                            <lightning-input
+                                type="number"
+                                label="Longitude"
+                                step="any"
+                                min="-180"
+                                max="180"
+                                value={longitudeInput}
+                                onchange={handleLongitudeChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+
+                    <lightning-button
+                        label="Rechercher par GPS"
+                        icon-name="utility:location"
+                        class="slds-m-top_small"
+                        onclick={handleCoordinatesSearch}
+                        disabled={isLoading}>
+                    </lightning-button>
+                </div>
+
+                
+            </template>
+
+            <template lwc:if={isLoading}>
+                <div class="slds-m-top_medium">
+                    <lightning-spinner
+                        alternative-text="Chargement météo"
+                        size="small">
+                    </lightning-spinner>
+                </div>
+            </template>
+
+            <template lwc:if={errorMessage}>
+                <div class="slds-m-top_medium slds-text-color_error"
+                     role="alert">
+                    {errorMessage}
+                </div>
+            </template>
+
+            <template lwc:if={hasWeather}>
+    <div class="slds-m-top_large">
+        <h2 class="city-title">{weather.city}</h2>
+
+                  
+
+
+<div class="slds-m-vertical_medium">
+    <span
+        style="font-size: 52px; line-height: 1.2;"
+        role="img"
+        aria-label="Conditions météorologiques">
+        {weatherEmoji}
+    </span>
+</div>
+
+
+
+
+                    <p class="temperature">
+                        {temperatureDisplay} °C
+                    </p>
+
+                    <p>{weather.description}</p>
+
+                    <div class="weather-details">
+                        <p>Vent : {windDisplay} km/h</p>
+                        <p>Humidité : {humidityDisplay} %</p>
+                    </div>
+
+                    
+                    <lightning-button
+                        label="Envoyer le rapport météo"
+                        variant="brand"
+                        icon-name="utility:email"
+                        class="slds-m-top_medium"
+                        onclick={handleSendReport}
+                        disabled={isSendDisabled}>
+                    </lightning-button>
+
+                    <template lwc:if={hasLastReport}>
+                        <p class="slds-m-top_medium">
+                            Dernier rapport envoyé :
+                            <lightning-formatted-date-time
+                                value={lastReportSent}
+                                year="numeric"
+                                month="2-digit"
+                                day="2-digit"
+                                hour="2-digit"
+                                minute="2-digit">
+                            </lightning-formatted-date-time>
+                        </p>
+                    </template>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
